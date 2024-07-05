@@ -23,7 +23,7 @@
         <!-- Page Content -->
         <main class="flex-1">
             @isset($sidebar)
-                <div class="container grid grid-cols-4 mt-8">
+                <div class="container grid grid-cols-4 mt-8 gap-14">
                     <div>
                         {{ $sidebar }}
                     </div>

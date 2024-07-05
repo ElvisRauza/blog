@@ -7,7 +7,7 @@
         <h1 class="dark:text-slate-100 text-2xl">Add new blog posts</h1>
     </div>
 
-    <form class="max-w-lg" method="post" action="{{ route('post.store') }}">
+    <form class="max-w-lg" method="post" action="{{ route('user.post.store') }}">
         @csrf
 
         <div>
@@ -17,14 +17,14 @@
             <x-input-error class="mt-2" :messages="$errors->get('title')" />
         </div>
 
-        <div>
-            <x-input-label for="content" :value="__('Content')" />
+        <div class="mt-4">
+            <x-input-label for="body" :value="__('Content')" />
             <textarea
                 class="block w-full resize-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                id="content" name="content" rows="10"></textarea>
-            <x-input-error class="mt-2" :messages="$errors->get('content')" />
+                id="body" name="body" rows="10"></textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('body')" />
         </div>
 
-        <x-primary-button>Create</x-primary-button>
+        <x-primary-button class="mt-4">Create</x-primary-button>
     </form>
 </x-app-layout>

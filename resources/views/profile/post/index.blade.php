@@ -6,25 +6,33 @@
     <div class="flex items-center justify-between">
         <h1 class="dark:text-slate-100 text-2xl">Your blog posts</h1>
 
-        <a class="btn-secondary" href="{{route('post.create')}}">Add new</a>
+        <a class="btn-secondary" href="{{ route('user.post.create') }}">Add new</a>
     </div>
 
     <ul class="flex flex-col gap-3 mt-4">
-        @for ($i = 0; $i < 6; $i++)
+        @foreach ($posts as $post)
             <li>
-                <article class="flex gap-2 justify-between dark:bg-slate-800 dark:text-slate-200 py-2 px-3 rounded-md">
-                    <h3><a href="/edit">Post</a></h3>
+                <article class="flex gap-2 justify-between bg-slate-200 dark:bg-slate-800 dark:text-slate-200 py-2 px-3 rounded-md">
+                    <h3><a href="{{ route('user.post.edit', $post) }}">{{ $post->title }}</a></h3>
 
                     <ul class="flex gap-2">
                         <li>
-                            <a href="/view">View</a>
+                            <a href="{{ route('user.post.show', $post) }}">View</a>
                         </li>
                         <li>
-                            <a href="/delete">Delete</a>
+                            <form method="POST" action="{{ route('user.post.destroy', $post) }}">
+                                @csrf
+                                @method('delete')
+                                <button type="submit">Delete</button>
+                            </form>
                         </li>
                     </ul>
                 </article>
             </li>
-        @endfor
+        @endforeach
     </ul>
+
+    <div class="mt-4">
+        {{ $posts->links() }}
+    </div>
 </x-app-layout>

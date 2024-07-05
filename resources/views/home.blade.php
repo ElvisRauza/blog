@@ -19,4 +19,23 @@
             @endfor
         </div>
     </section>
+
+    <section class="container mt-16">
+        <h2 class="text-3xl dark:text-slate-200">Latests posts</h2>
+
+        <div class="grid grid-cols-2 gap-2 mt-4">
+            @foreach ($latestPosts as $post)
+                <article>
+                    <a class="block p-3 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 rounded-md"
+                        href="{{ route('blog.show', $post->id) }}">
+                        <h3>{{ $post->title }}</h3>
+                    </a>
+                </article>
+            @endforeach
+        </div>
+
+        <div class="mt-4">
+            <a href="{{ route('blog.index') }}" class="btn-primary">View all posts</a>
+        </div>
+    </section>
 </x-app-layout>

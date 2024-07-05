@@ -10,29 +10,32 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('profile.post.index');
-    }
+        $posts = Post::with('user');
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('profile.post.create');
-    }
+        // If has search
+        if ($request->has('search')) {
+            $validated = $request->validate([
+                'search' => 'nullable|string',
+            ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|min:5',
+            $search = $validated['search'];
+
+            $posts = $posts->where('title', 'like', '%' . $search . '%')
+                ->orWhere('body', 'like', '%' . $search . '%');
+        } else {
+            $search = '';
+        }
+
+        $posts = $posts->orderBy('created_at', 'desc')
+            ->paginate(16)
+            ->appends($request->query());
+
+        return view('blog.index', [
+            'search' => $search,
+            'posts' => $posts,
         ]);
-
-        return view('profile.post.create');
     }
 
     /**
@@ -40,38 +43,10 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
-    }
+        $post = $post->load('user');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Post $post)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Post $post)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Post $post)
-    {
-        //
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function list(Request $request)
-    {
-        //
+        return view('blog.show', [
+            'post' => $post,
+        ]);
     }
 }
