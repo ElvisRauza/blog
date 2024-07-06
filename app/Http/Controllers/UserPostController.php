@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserPostRequest;
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,7 +29,11 @@ class UserPostController extends Controller
      */
     public function create(): View
     {
-        return view('profile.post.create');
+        $categories = Category::all();
+
+        return view('profile.post.create', [
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -38,7 +43,9 @@ class UserPostController extends Controller
     {
         $validated = $request->validated();
 
-        $request->user()->posts()->create($validated);
+        $post = $request->user()->posts()->create($validated);
+
+        $post->categories()->attach($validated['categories']);
 
         return redirect(route('user.post.index'))->with('message', 'Post created successfully');
     }
@@ -58,8 +65,13 @@ class UserPostController extends Controller
     {
         Gate::authorize('update', $post);
 
+        $post = $post->load('categories');
+
+        $categories = Category::all();
+
         return view('profile.post.edit', [
-            'post' => $post
+            'post' => $post,
+            'categories' => $categories
         ]);
     }
 
@@ -84,6 +96,7 @@ class UserPostController extends Controller
     {
         Gate::authorize('delete', $post);
 
+        $post->categories()->detach();
         $post->delete();
 
         return redirect(route('user.post.index'))->with('message', 'Post deleted');

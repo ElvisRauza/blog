@@ -25,6 +25,7 @@ class UserPostRequest extends FormRequest
         return [
             'title' => 'required|max:255',
             'body' => 'required|min:50',
+            'categories' => 'required',
         ];
     }
 }

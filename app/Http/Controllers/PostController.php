@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,9 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $posts = Post::with('user');
+        $posts = Post::with(['user', 'comments', 'categories']);
+
+        $categories = Category::all();
 
         // If has search
         if ($request->has('search')) {
@@ -28,6 +31,21 @@ class PostController extends Controller
             $search = '';
         }
 
+        // If has category
+        if ($request->has('category')) {
+            $validated = $request->validate([
+                'category' => 'nullable|int',
+            ]);
+
+            $category_id = $validated['category'];
+
+            $posts = $posts->whereHas('categories', function ($cat) use ($category_id) {
+                return $cat->where('categories.id', $category_id);
+            });
+        } else {
+            $category_id = 0;
+        }
+
         $posts = $posts->orderBy('created_at', 'desc')
             ->paginate(16)
             ->appends($request->query());
@@ -35,6 +53,8 @@ class PostController extends Controller
         return view('blog.index', [
             'search' => $search,
             'posts' => $posts,
+            'category' => $category_id,
+            'categories' => $categories,
         ]);
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserPostController;
@@ -24,5 +25,12 @@ Route::prefix('/dashboard')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 })->middleware(['auth']);
+
+
+// Comment
+Route::resource('/comment', CommentController::class)
+    ->only(['store', 'destroy'])
+    ->middleware('auth');
+
 
 require __DIR__ . '/auth.php';

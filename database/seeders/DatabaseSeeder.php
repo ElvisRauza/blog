@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -24,5 +25,7 @@ class DatabaseSeeder extends Seeder
         Post::factory()->count(25)->create([
             'user_id' => 1,
         ]);
+
+        Category::factory()->count(3)->create();
     }
 }
