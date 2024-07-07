@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="flex items-center justify-between">
-        <h1 class="dark:text-slate-100 text-2xl">Add new blog posts</h1>
+        <h1 class="dark:text-slate-100 text-2xl">{{ __('Add new blog posts') }}</h1>
     </div>
 
     <form class="max-w-lg" method="post" action="{{ route('user.post.store') }}">
@@ -20,7 +20,7 @@
         <div class="mt-4">
             <x-input-label for="categories" :value="__('Categories')" />
             <select multiple class="mt-1 block w-full resize-none input" name="categories[]" id="categories">
-                <option value="">Please select category</option>
+                <option value="">{{ __('Please select category') }}</option>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id }}" @selected(collect(old('categories'))->contains($category->id))>{{ $category->name }}</option>
                 @endforeach
@@ -34,6 +34,6 @@
             <x-input-error class="mt-2" :messages="$errors->get('body')" />
         </div>
 
-        <x-primary-button class="mt-4">Create</x-primary-button>
+        <x-primary-button class="mt-4">{{ __('Create') }}</x-primary-button>
     </form>
 </x-app-layout>

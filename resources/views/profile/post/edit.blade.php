@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="flex items-center justify-between">
-        <h1 class="dark:text-slate-100 text-2xl">Edit blog posts</h1>
+        <h1 class="dark:text-slate-100 text-2xl">{{ __('Edit blog posts') }}</h1>
     </div>
 
     <form class="max-w-lg" method="POST" action="{{ route('user.post.update', $post) }}">
@@ -23,7 +23,7 @@
             <select multiple
                 class="mt-1 block w-full resize-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                 name="categories" id="categories">
-                <option value="">Please select category</option>
+                <option value="">{{ __('Please select category') }}</option>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id }}" @selected(in_array($category->id, $post->categories->pluck('id')->toArray()))>{{ $category->name }}</option>
                 @endforeach
@@ -39,6 +39,6 @@
             <x-input-error class="mt-2" :messages="$errors->get('body')" />
         </div>
 
-        <x-primary-button class="mt-4">Update</x-primary-button>
+        <x-primary-button class="mt-4">{{ __('Update') }}</x-primary-button>
     </form>
 </x-app-layout>

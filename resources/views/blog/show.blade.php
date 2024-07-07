@@ -3,8 +3,8 @@
         <h1 class="text-4xl">{{ $post->title }}</h1>
 
         <div class="mt-2 text-sm">
-            <p>Created at: {{ $post->created_at->format('d. F, Y') }}</p>
-            <p class="mt-1">Categories: {{ $post->categories->pluck('name')->join(', ') }}</p>
+            <p>{{ __('Created at:') }} {{ $post->created_at->format('d. F, Y') }}</p>
+            <p class="mt-1">{{ __('Categories:') }} {{ $post->categories->pluck('name')->join(', ') }}</p>
         </div>
 
         <div class="mt-6">
@@ -13,14 +13,15 @@
 
         <div class="mt-6 flex">
             <div class="py-1 px-3 bg-zinc-200 dark:bg-slate-700 rounded-lg">
-                <p class="text-xs">Created by</p>
+                <p class="text-xs">{{ __('Created by') }}</p>
                 <p class="text-sm">{{ $post->user->name }}</p>
             </div>
         </div>
     </section>
 
     <section class="container mt-12">
-        <h2 class="text-xl dark:text-slate-200">Comments
+        <h2 class="text-xl dark:text-slate-200">
+            {{ __('Comments') }}
             @if (0 < $post->comments->count())
                 <span class="text-sm">({{ $post->comments->count() }})</span>
             @endif
@@ -30,11 +31,11 @@
         <div>
             @if (0 == $post->comments->count())
                 @auth
-                    <p class="mt-1 dark:text-slate-200">This post has no comments, be first to comment!</p>
+                    <p class="mt-1 dark:text-slate-200">{{ __('This post has no comments, be first to comment!') }}</p>
                 @else
-                    <p class="mt-1 dark:text-slate-200">This post has no comments, login to comment!</p>
+                    <p class="mt-1 dark:text-slate-200">{{ __('This post has no comments, login to comment!') }}</p>
 
-                    <a class="btn-secondary mt-2" href="{{ route('login') }}">Login</a>
+                    <a class="btn-secondary mt-2" href="{{ route('login') }}">{{ __('Login') }}</a>
                 @endauth
             @else
                 <ul class="mt-3">
@@ -46,14 +47,32 @@
                                     {{ $comment->created_at->format('d.m.y') }}
                                 </p>
                                 @if ($comment->user->is(auth()->user()))
-                                    <form method="POST" action="{{ route('comment.destroy', $comment) }}">
-                                        @csrf
-                                        @method('delete')
+                                    <button class="text-red-500 text-sm" x-data=""
+                                        x-on:click.prevent="$dispatch('open-modal', 'confirm-comment-deletion-{{ $comment->id }}')">{{ __('Delete') }}</button>
+                                    <x-modal name="confirm-comment-deletion-{{ $comment->id }}" :show="$errors->comment->isNotEmpty()"
+                                        focusable>
+                                        <form class="p-6" method="POST"
+                                            action="{{ route('comment.destroy', $comment) }}">
+                                            @csrf
+                                            @method('delete')
 
-                                        <input type="hidden" name="post_id" value="{{ $post->id }}">
+                                            <input type="hidden" name="post_id" value="{{ $post->id }}">
 
-                                        <button class="block text-red-600 text-xs">Delete</button>
-                                    </form>
+                                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                                {{ __('Are you sure you want to delete this comment?') }}
+                                            </h2>
+
+                                            <div class="mt-6 flex justify-end">
+                                                <x-secondary-button x-on:click="$dispatch('close')">
+                                                    {{ __('Cancel') }}
+                                                </x-secondary-button>
+
+                                                <x-danger-button class="ms-3">
+                                                    {{ __('Delete') }}
+                                                </x-danger-button>
+                                            </div>
+                                        </form>
+                                    </x-modal>
                                 @endif
                             </div>
                             <p>{{ $comment->comment }}</p>
@@ -76,10 +95,10 @@
                     <x-input-error class="mt-2" :messages="$errors->get('comment')" />
                 </div>
 
-                <x-primary-button class="mt-2">Comment</x-primary-button>
+                <x-primary-button class="mt-2">{{ __('Comment') }}</x-primary-button>
             </form>
         @else
-            <a class="btn-secondary mt-6" href="{{ route('login') }}">Login to comment</a>
+            <a class="btn-secondary mt-6" href="{{ route('login') }}">{{ __('Login to comment') }}</a>
         @endauth
     </section>
 </x-app-layout>

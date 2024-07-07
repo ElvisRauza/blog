@@ -11,6 +11,6 @@
             @endif
         </p>
 
-        <span class="text-sm mt-auto">Read more</span>
+        <span class="text-sm mt-auto">{{ __('Read more') }}</span>
     </a>
 </article>
