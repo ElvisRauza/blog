@@ -17,12 +17,12 @@
             <x-input-error class="mt-2" :messages="$errors->get('title')" />
         </div>
 
-        <div>
+        <div class="mt-4">
             <x-input-label for="categories" :value="__('Categories')" />
-            <select multiple class="mt-1 block w-full resize-none input" name="categories" id="categories">
+            <select multiple class="mt-1 block w-full resize-none input" name="categories[]" id="categories">
                 <option value="">Please select category</option>
                 @foreach ($categories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    <option value="{{ $category->id }}" @selected(collect(old('categories'))->contains($category->id))>{{ $category->name }}</option>
                 @endforeach
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('categories')" />
@@ -30,7 +30,7 @@
 
         <div class="mt-4">
             <x-input-label for="body" :value="__('Content')" />
-            <textarea class="block w-full resize-none input" id="body" name="body" rows="10"></textarea>
+            <textarea class="block w-full resize-none input" id="body" name="body" rows="10">{{ old('body') }}</textarea>
             <x-input-error class="mt-2" :messages="$errors->get('body')" />
         </div>
 

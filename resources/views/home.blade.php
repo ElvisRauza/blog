@@ -13,7 +13,7 @@
                 @foreach ($categories as $category)
                     <article>
                         <a href="{{ route('blog.index') }}?category={{ $category->id }}"
-                            class="block bg-slate-200 dark:bg-slate-600 dark:text-slate-100 p-4 rounded-md border border-slate-800 transition-colors hover:slate-300 dark:hover:bg-slate-700">
+                            class="block bg-slate-200 dark:bg-slate-600 dark:text-slate-100 p-4 rounded-md border border-slate-800 transition-colors hover:bg-slate-300 dark:hover:bg-slate-700">
                             <p>{{ $category->name }}</p>
                         </a>
                     </article>
@@ -28,16 +28,11 @@
         @if (0 < $latestPosts->count())
             <div class="grid grid-cols-2 gap-2 mt-4">
                 @foreach ($latestPosts as $post)
-                    <article>
-                        <a class="block p-3 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 rounded-md"
-                            href="{{ route('blog.show', $post->id) }}">
-                            <h3>{{ $post->title }}</h3>
-                        </a>
-                    </article>
+                    <x-blog-article :post="$post" />
                 @endforeach
             </div>
         @else
-            <p>No latest posts</p>
+            <p class="dark:text-slate-200">No latest posts</p>
         @endif
 
         <div class="mt-4">

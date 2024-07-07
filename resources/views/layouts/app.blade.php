@@ -26,23 +26,23 @@
         <!-- Page Content -->
         <main class="flex-1">
             @isset($sidebar)
-                <div class="container grid grid-cols-4 mt-8 gap-14">
-                    <div>
+                <div class="container md:grid md:grid-cols-4 md:gap-14">
+                    <div class="pt-8">
                         {{ $sidebar }}
                     </div>
-                    <div class="col-span-3">
+                    <div class="pt-8 md:col-span-3">
                         {{ $slot }}
                     </div>
                 </div>
             @else
                 {{ $slot }}
-                @endif
-            </main>
+            @endisset
+        </main>
 
-            <footer class="container py-2">
-                <p class="text-slate-300 dark:text-slate-700 text-center">&copy; All rights reserved {{ gmdate('Y') }}</p>
-            </footer>
-        </div>
-    </body>
+        <footer class="container py-2">
+            <p class="text-slate-300 dark:text-slate-700 text-center">&copy; All rights reserved {{ gmdate('Y') }}</p>
+        </footer>
+    </div>
+</body>
 
-    </html>
+</html>

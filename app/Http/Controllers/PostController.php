@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PostController extends Controller
 {
@@ -15,35 +17,29 @@ class PostController extends Controller
     {
         $posts = Post::with(['user', 'comments', 'categories']);
 
-        $categories = Category::all();
+        $categories = Cache::get('categories', function () {
+            return Category::all();
+        });
+
+        // If has category
+        if ($request->get('category')) {
+            $category_id = $request->input('category');
+
+            $posts = $posts->whereHas('categories', function (Builder $query) use ($category_id) {
+                $query->where('categories.id', $category_id);
+            });
+        } else {
+            $category_id = 0;
+        }
 
         // If has search
-        if ($request->has('search')) {
-            $validated = $request->validate([
-                'search' => 'nullable|string',
-            ]);
-
-            $search = $validated['search'];
+        if ($request->get('search')) {
+            $search = $request->input('search');
 
             $posts = $posts->where('title', 'like', '%' . $search . '%')
                 ->orWhere('body', 'like', '%' . $search . '%');
         } else {
             $search = '';
-        }
-
-        // If has category
-        if ($request->has('category')) {
-            $validated = $request->validate([
-                'category' => 'nullable|int',
-            ]);
-
-            $category_id = $validated['category'];
-
-            $posts = $posts->whereHas('categories', function ($cat) use ($category_id) {
-                return $cat->where('categories.id', $category_id);
-            });
-        } else {
-            $category_id = 0;
         }
 
         $posts = $posts->orderBy('created_at', 'desc')

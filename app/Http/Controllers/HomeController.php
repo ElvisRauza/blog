@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
+        $categories = Cache::get('categories', function () {
+            return Category::all();
+        });
 
         return view('home', [
             'categories' => $categories,
@@ -20,8 +22,8 @@ class HomeController extends Controller
 
     private function getLatestPosts()
     {
-        $posts = Post::with('user')->orderBy('created_at', 'desc')->take(5)->get();
-
-        return $posts;
+        return Cache::get('latest_posts', function () {
+            return Post::with('user')->orderBy('created_at', 'desc')->take(5)->get();
+        });
     }
 }

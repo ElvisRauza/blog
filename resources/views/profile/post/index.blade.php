@@ -17,7 +17,10 @@
 
                     <ul class="flex gap-2">
                         <li>
-                            <a href="{{ route('user.post.show', $post) }}">View</a>
+                            <a href="{{ route('user.post.edit', $post) }}">Edit</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('blog.show', $post) }}">View</a>
                         </li>
                         <li>
                             <form method="POST" action="{{ route('user.post.destroy', $post) }}">

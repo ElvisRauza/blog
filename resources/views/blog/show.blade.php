@@ -12,7 +12,7 @@
         </div>
 
         <div class="mt-6 flex">
-            <div class="py-1 px-3 dark:bg-slate-700 rounded-lg">
+            <div class="py-1 px-3 bg-zinc-200 dark:bg-slate-700 rounded-lg">
                 <p class="text-xs">Created by</p>
                 <p class="text-sm">{{ $post->user->name }}</p>
             </div>
@@ -20,7 +20,7 @@
     </section>
 
     <section class="container mt-12">
-        <h2 class="text-xl dark:text-slate-200">Post comments
+        <h2 class="text-xl dark:text-slate-200">Comments
             @if (0 < $post->comments->count())
                 <span class="text-sm">({{ $post->comments->count() }})</span>
             @endif
@@ -29,11 +29,17 @@
 
         <div>
             @if (0 == $post->comments->count())
-                <p class="mt-1 dark:text-slate-200">This post has no comments, be first to comment!</p>
+                @auth
+                    <p class="mt-1 dark:text-slate-200">This post has no comments, be first to comment!</p>
+                @else
+                    <p class="mt-1 dark:text-slate-200">This post has no comments, login to comment!</p>
+
+                    <a class="btn-secondary mt-2" href="{{ route('login') }}">Login</a>
+                @endauth
             @else
                 <ul class="mt-3">
                     @foreach ($post->comments as $comment)
-                        <li class="py-2 px-3 dark:bg-slate-700 dark:text-slate-200 rounded-md">
+                        <li class="py-2 px-3 mt-4 bg-zinc-200 dark:bg-slate-700 dark:text-slate-200 rounded-md">
                             <div class="flex justify-between">
                                 <p class="text-xs dark:text-slate-400">{{ $comment->user->name }} commented at
                                     {{ $comment->created_at->format('H:i') }} on
@@ -72,6 +78,8 @@
 
                 <x-primary-button class="mt-2">Comment</x-primary-button>
             </form>
-            @endif
-        </section>
-    </x-app-layout>
+        @else
+            <a class="btn-secondary mt-6" href="{{ route('login') }}">Login to comment</a>
+        @endauth
+    </section>
+</x-app-layout>

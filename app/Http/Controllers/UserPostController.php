@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -29,7 +30,9 @@ class UserPostController extends Controller
      */
     public function create(): View
     {
-        $categories = Category::all();
+        $categories = Cache::get('categories', function () {
+            return Category::all();
+        });
 
         return view('profile.post.create', [
             'categories' => $categories,
@@ -47,15 +50,9 @@ class UserPostController extends Controller
 
         $post->categories()->attach($validated['categories']);
 
-        return redirect(route('user.post.index'))->with('message', 'Post created successfully');
-    }
+        Cache::forget('latest_posts');
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
-    {
-        //
+        return redirect(route('user.post.index'))->with('message', 'Post created successfully');
     }
 
     /**
@@ -67,7 +64,9 @@ class UserPostController extends Controller
 
         $post = $post->load('categories');
 
-        $categories = Category::all();
+        $categories = Cache::get('categories', function () {
+            return Category::all();
+        });
 
         return view('profile.post.edit', [
             'post' => $post,
@@ -99,6 +98,20 @@ class UserPostController extends Controller
         $post->categories()->detach();
         $post->delete();
 
+        Cache::forget('latest_posts');
+
         return redirect(route('user.post.index'))->with('message', 'Post deleted');
+    }
+
+    /**
+     * Dashboard controller
+     */
+    public function dashboard(Request $request)
+    {
+        $posts = Post::where('user_id', $request->user()->id)->count();
+
+        return view('profile.dashboard', [
+            'posts' => $posts,
+        ]);
     }
 }

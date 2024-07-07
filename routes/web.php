@@ -13,9 +13,7 @@ Route::get('/blog', [PostController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post}', [PostController::class, 'show'])->name('blog.show');
 
 Route::prefix('/dashboard')->group(function () {
-    Route::get('/', function () {
-        return view('profile.dashboard');
-    })->name('dashboard');
+    Route::get('/', [UserPostController::class, 'dashboard'])->name('dashboard');
 
     // Post links
     Route::resource('/post', UserPostController::class)->names('user.post');
