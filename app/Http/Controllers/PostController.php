@@ -15,31 +15,31 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
+        $validated = $request->validate([
+            'category' => 'nullable|integer|exists:categories,id',
+            'search' => 'nullable|string|max:255',
+        ]);
+
+        $category_id = !empty($validated['category']) ? strip_tags($validated['category']) : 0;
+        $search = !empty($validated['search']) ? strip_tags($validated['search']) : '';
+
         $posts = Post::with(['user', 'comments', 'categories']);
 
-        $categories = Cache::get('categories', function () {
+        $categories = Cache::remember('categories', 60 * 60 * 24, function () {
             return Category::all();
         });
 
         // If has category
-        if ($request->get('category')) {
-            $category_id = $request->input('category');
-
+        if ($category_id) {
             $posts = $posts->whereHas('categories', function (Builder $query) use ($category_id) {
                 $query->where('categories.id', $category_id);
             });
-        } else {
-            $category_id = 0;
         }
 
         // If has search
-        if ($request->get('search')) {
-            $search = $request->input('search');
-
+        if ($search) {
             $posts = $posts->where('title', 'like', '%' . $search . '%')
                 ->orWhere('body', 'like', '%' . $search . '%');
-        } else {
-            $search = '';
         }
 
         $posts = $posts->orderBy('created_at', 'desc')

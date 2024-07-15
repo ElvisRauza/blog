@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Policies\PostPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserPostRequest extends FormRequest
@@ -23,9 +22,10 @@ class UserPostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|max:255',
-            'body' => 'required|min:50',
-            'categories' => 'required',
+            'title' => 'required|string|max:255',
+            'body' => 'required|string|min:50',
+            'categories' => 'required|array',
+            'categories.*' => 'integer|exists:categories,id',
         ];
     }
 }

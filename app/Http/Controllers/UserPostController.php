@@ -30,7 +30,7 @@ class UserPostController extends Controller
      */
     public function create(): View
     {
-        $categories = Cache::get('categories', function () {
+        $categories = Cache::remember('categories', 60 * 60 * 24, function () {
             return Category::all();
         });
 
@@ -45,6 +45,9 @@ class UserPostController extends Controller
     public function store(UserPostRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+
+        $validated['title'] = strip_tags($validated['title']);
+        $validated['body'] = strip_tags($validated['body']);
 
         $post = $request->user()->posts()->create($validated);
 
@@ -64,7 +67,7 @@ class UserPostController extends Controller
 
         $post = $post->load('categories');
 
-        $categories = Cache::get('categories', function () {
+        $categories = Cache::remember('categories', 60 * 60 * 24, function () {
             return Category::all();
         });
 
@@ -83,7 +86,12 @@ class UserPostController extends Controller
 
         $validated = $request->validated();
 
+        $validated['title'] = strip_tags($validated['title']);
+        $validated['body'] = strip_tags($validated['body']);
+
         $post->update($validated);
+
+        $post->categories()->sync($validated['categories']);
 
         return redirect(route('user.post.index'));
     }

@@ -37,7 +37,7 @@ class CommentController extends Controller
         Gate::authorize('delete', $comment);
 
         $validated = $request->validate([
-            'post_id' => 'required|int',
+            'post_id' => 'required|integer|exists:posts.id',
         ]);
 
         $comment->delete();

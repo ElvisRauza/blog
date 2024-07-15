@@ -10,7 +10,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $categories = Cache::get('categories', function () {
+        $categories = Cache::remember('categories', 60 * 60 * 24, function () {
             return Category::all();
         });
 
@@ -22,7 +22,7 @@ class HomeController extends Controller
 
     private function getLatestPosts()
     {
-        return Cache::get('latest_posts', function () {
+        return Cache::remember('latest_posts', 60 * 60 * 24, function () {
             return Post::with('user')->orderBy('created_at', 'desc')->take(5)->get();
         });
     }

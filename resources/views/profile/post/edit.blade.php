@@ -22,7 +22,7 @@
             <x-input-label for="categories" :value="__('Categories')" />
             <select multiple
                 class="mt-1 block w-full resize-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                name="categories" id="categories">
+                name="categories[]" id="categories">
                 <option value="">{{ __('Please select category') }}</option>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id }}" @selected(in_array($category->id, $post->categories->pluck('id')->toArray()))>{{ $category->name }}</option>
