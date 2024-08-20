@@ -24,7 +24,6 @@ class CommentController extends Controller
         $comment->post()->associate($post);
         $comment->save();
 
-
         return redirect(route('blog.show', $validated['post_id']))
             ->with('message', 'Commect created successfully');
     }

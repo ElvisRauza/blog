@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,36 +19,30 @@ class PostController extends Controller
             'search' => 'nullable|string|max:255',
         ]);
 
-        $category_id = !empty($validated['category']) ? strip_tags($validated['category']) : 0;
-        $search = !empty($validated['search']) ? strip_tags($validated['search']) : '';
-
-        $posts = Post::with(['user', 'comments', 'categories']);
-
-        $categories = Cache::remember('categories', 60 * 60 * 24, function () {
-            return Category::all();
-        });
-
         // If has category
-        if ($category_id) {
-            $posts = $posts->whereHas('categories', function (Builder $query) use ($category_id) {
-                $query->where('categories.id', $category_id);
-            });
+        if (isset($validated['category'])) {
+            $posts = Category::find($validated['category'])->posts()->with(['user', 'comments', 'categories']);
+        } else {
+            $posts = Post::with(['user', 'comments', 'categories']);
         }
 
         // If has search
-        if ($search) {
-            $posts = $posts->where('title', 'like', '%' . $search . '%')
-                ->orWhere('body', 'like', '%' . $search . '%');
+        if (isset($validated['search'])) {
+            $posts = $posts->search($validated['search']);
         }
 
         $posts = $posts->orderBy('created_at', 'desc')
             ->paginate(16)
             ->appends($request->query());
 
+        $categories = Cache::remember('categories', 60 * 60 * 24, function () {
+            return Category::all();
+        });
+
         return view('blog.index', [
-            'search' => $search,
+            'search' => $validated['search'] ?? null,
             'posts' => $posts,
-            'category' => $category_id,
+            'category' => $validated['category'] ?? null,
             'categories' => $categories,
         ]);
     }
@@ -59,7 +52,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = $post->load('user');
+        $post = $post->load(['user', 'comments', 'comments.user']);
 
         return view('blog.show', [
             'post' => $post,

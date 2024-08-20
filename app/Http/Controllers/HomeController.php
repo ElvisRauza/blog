@@ -14,16 +14,13 @@ class HomeController extends Controller
             return Category::all();
         });
 
+        $latest_posts = Cache::remember('latest_posts', 60 * 60 * 24, function () {
+            return Post::with(['user','categories'])->orderBy('created_at', 'desc')->take(5)->get();
+        });
+
         return view('home', [
             'categories' => $categories,
-            'latestPosts' => $this->getLatestPosts(),
+            'latestPosts' => $latest_posts,
         ]);
-    }
-
-    private function getLatestPosts()
-    {
-        return Cache::remember('latest_posts', 60 * 60 * 24, function () {
-            return Post::with('user')->orderBy('created_at', 'desc')->take(5)->get();
-        });
     }
 }

@@ -44,14 +44,12 @@ class UserPostController extends Controller
      */
     public function store(UserPostRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
+        $post = $request->user()->posts()->create([
+            'title' => $request->validated('title'),
+            'body' => $request->validated('body'),
+        ]);
 
-        $validated['title'] = strip_tags($validated['title']);
-        $validated['body'] = strip_tags($validated['body']);
-
-        $post = $request->user()->posts()->create($validated);
-
-        $post->categories()->attach($validated['categories']);
+        $post->categories()->attach($request->validated('categories'));
 
         Cache::forget('latest_posts');
 
@@ -84,14 +82,12 @@ class UserPostController extends Controller
     {
         Gate::authorize('update', $post);
 
-        $validated = $request->validated();
+        $post->update([
+            'title' => $request->validated('title'),
+            'body' => $request->validated('body'),
+        ]);
 
-        $validated['title'] = strip_tags($validated['title']);
-        $validated['body'] = strip_tags($validated['body']);
-
-        $post->update($validated);
-
-        $post->categories()->sync($validated['categories']);
+        $post->categories()->sync($request->validated('categories'));
 
         return redirect(route('user.post.index'));
     }
@@ -116,10 +112,8 @@ class UserPostController extends Controller
      */
     public function dashboard(Request $request)
     {
-        $posts = Post::where('user_id', $request->user()->id)->count();
-
         return view('profile.dashboard', [
-            'posts' => $posts,
+            'posts' => $request->user()->posts()->count(),
         ]);
     }
 }
